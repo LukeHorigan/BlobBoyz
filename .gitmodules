@@ -1,0 +1,3 @@
+[submodule "objDetectML/tensorflowStartersPy/models"]
+	path = objDetectML/tensorflowStartersPy/models
+	url = https://github.com/tensorflow/models.git
