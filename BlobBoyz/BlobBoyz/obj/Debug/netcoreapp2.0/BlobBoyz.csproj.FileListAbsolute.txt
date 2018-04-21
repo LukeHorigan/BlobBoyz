@@ -1,0 +1,8 @@
+C:\Users\kbark\Documents\Visual Studio 2017\Projects\BlobBoys\BlobBoyz\BlobBoyz\bin\Debug\netcoreapp2.0\BlobBoyz.deps.json
+C:\Users\kbark\Documents\Visual Studio 2017\Projects\BlobBoys\BlobBoyz\BlobBoyz\bin\Debug\netcoreapp2.0\BlobBoyz.runtimeconfig.json
+C:\Users\kbark\Documents\Visual Studio 2017\Projects\BlobBoys\BlobBoyz\BlobBoyz\bin\Debug\netcoreapp2.0\BlobBoyz.runtimeconfig.dev.json
+C:\Users\kbark\Documents\Visual Studio 2017\Projects\BlobBoys\BlobBoyz\BlobBoyz\bin\Debug\netcoreapp2.0\BlobBoyz.dll
+C:\Users\kbark\Documents\Visual Studio 2017\Projects\BlobBoys\BlobBoyz\BlobBoyz\obj\Debug\netcoreapp2.0\BlobBoyz.csprojResolveAssemblyReference.cache
+C:\Users\kbark\Documents\Visual Studio 2017\Projects\BlobBoys\BlobBoyz\BlobBoyz\obj\Debug\netcoreapp2.0\BlobBoyz.csproj.CoreCompileInputs.cache
+C:\Users\kbark\Documents\Visual Studio 2017\Projects\BlobBoys\BlobBoyz\BlobBoyz\obj\Debug\netcoreapp2.0\BlobBoyz.AssemblyInfoInputs.cache
+C:\Users\kbark\Documents\Visual Studio 2017\Projects\BlobBoys\BlobBoyz\BlobBoyz\obj\Debug\netcoreapp2.0\BlobBoyz.AssemblyInfo.cs
