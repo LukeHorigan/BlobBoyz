@@ -4,7 +4,7 @@ An automated algorithm for inspecting holes in pipes
 
 **Authors**
 
-Kevin Barkevich, Lucas Horigan, David Chen
+Kevin Barkevich, Lucas Horigan, David Chen, Kevin Dickey
 
 # Overview
 
