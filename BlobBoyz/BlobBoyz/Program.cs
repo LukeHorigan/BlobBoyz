@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*
+ Kevin Barkevich
+ */
+
+using System;
 using Accord;
 
 namespace BlobBoyz
