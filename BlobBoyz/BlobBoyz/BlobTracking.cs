@@ -12,6 +12,7 @@ using Accord.Imaging.Filters;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Windows.Forms;
 
 
 
@@ -20,8 +21,8 @@ namespace BlobBoyz
 
     class BlobTracking
     {
+        
         const int CONSIDERED_AT_TOP_RANGE = 50;
-
         /*
          Pre:
          Post: Whether or not the blob is a duplicate of a previously found blob is returned as a bool (true: duplicate, false: not duplicate) and if it is the data in the list is updated
@@ -35,7 +36,7 @@ namespace BlobBoyz
         {
             // Initialize blob we can work with
             Accord.Imaging.Blob myBlob = new Accord.Imaging.Blob(inBlob);
-
+            
             int totExistingBlobs = lastBlobs.Length;
             Accord.Imaging.Blob currBlob;
             bool hasBeenFound = false;
@@ -107,13 +108,13 @@ namespace BlobBoyz
             return result;
         }
 
-        public static Blob[] getBlobs(Bitmap inImage, int threshhold)
+        public static Blob[] getBlobs(Bitmap inImage, int fastThreshhold, int distanceThreshhold)
         {
 
             FastCornersDetector fast = new FastCornersDetector()
             {
                 Suppress = true, // suppress non-maximum points
-                Threshold = threshhold   // less leads to more corners
+                Threshold = fastThreshhold   // less leads to more corners
             };
 
             List<IntPoint> points = fast.ProcessImage(inImage);
@@ -156,93 +157,185 @@ namespace BlobBoyz
             {
                 var result = new HashSet<System.Drawing.Point>();
                 var found = new Queue<System.Drawing.Point>();
-
-                windowsPoints.Reverse();
-                found.Enqueue(windowsPoints[pointsLeft - 1]);
-                windowsPoints.Reverse();
-                windowsPoints.RemoveAt(0);
-
-                while (found.Count > 0)
+                if (windowsPoints.Count != 0)
                 {
-                    var current = found.Dequeue();
-                    var candidates = windowsPoints
-                        .Where(p => !result.Contains(p) &&
-                               Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= threshhold);
+                    windowsPoints.Reverse();
+                    if (pointsLeft > windowsPoints.Count())
+                        pointsLeft--;
+                    found.Enqueue(windowsPoints[pointsLeft - 1]);
+                    windowsPoints.Reverse();
+                    windowsPoints.RemoveAt(0);
 
-                    foreach (var p in candidates)
+                    while (found.Count > 0)
                     {
-                        result.Add(p);
-                        found.Enqueue(p);
-                    }
-                }
+                        var current = found.Dequeue();
+                        /*
+                        var candidates = windowsPoints
+                            .Where(p => !result.Contains(p) &&
+                                   Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= threshhold);
+                        */
 
-                IntPoint[] validPoints = new IntPoint[BlobBoyz.Program.MAX_BLOBS_PER_FRAME * 30];
-                int pointIndex = 0;
+                        var candidates = new List<System.Drawing.Point>();
+                        candidates.Add(windowsPoints[0]);
+                        var candidatesSquared = new List<System.Drawing.Point>();
+                        var nCandidates = new List<System.Drawing.Point>(rBlob(candidates, candidatesSquared, windowsPoints, windowsPoints[0], distanceThreshhold));
+                        candidates = new List<System.Drawing.Point>(nCandidates);
 
-                foreach (System.Drawing.Point p in result)
-                {
-                    IntPoint tempPoint;
-                    tempPoint.X = p.X;
-                    tempPoint.Y = p.Y;
-
-                    bool canAdd = true;
-                    for (int i = 0; i < allPoints.Length; i++)
-                    {
-                        if (tempPoint.X == allPoints[i].X && tempPoint.Y == allPoints[i].Y)
+                        /*
+                        foreach (var p in windowsPoints)
                         {
-                            canAdd = false;
+                            if ((Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= distanceThreshhold))
+                                candidates.Add(p);
+                        }
+
+                        var candidatsSquared = new List<System.Drawing.Point>(candidates);
+
+                        while (candidatsSquared != candidates)
+                        {
+                            foreach (var p in candidates)
+                            {
+
+                            }
+                        }
+                        */
+                        foreach (var p in candidates)
+                        {
+                            windowsPoints.Remove(p);
+                            result.Add(p);
+                            found.Enqueue(p);
+                        }
+                        
+                    }
+
+                    IntPoint[] validPoints = new IntPoint[999999];
+                    int pointIndex = 0;
+
+                    foreach (System.Drawing.Point p in result)
+                    {
+                        IntPoint tempPoint;
+                        tempPoint.X = p.X;
+                        tempPoint.Y = p.Y;
+
+                        bool canAdd = true;
+                        for (int i = 0; i < allPoints.Length; i++)
+                        {
+                            if (tempPoint.X == allPoints[i].X && tempPoint.Y == allPoints[i].Y)
+                            {
+                                canAdd = false;
+                            }
+                        }
+
+                        if (canAdd)
+                        {
+                            allPoints[allPtsCtr] = tempPoint;
+                            allPtsCtr++;
+
+                            pointsLeft--;
+                            validPoints[pointIndex] = tempPoint;
+                            pointIndex++;
                         }
                     }
 
-                    if (canAdd)
+                    if (pointIndex > 0)
                     {
-                        allPoints[allPtsCtr] = tempPoint;
-                        allPtsCtr++;
+                        IntPoint currHighest = validPoints[0];
+                        IntPoint currLowest = validPoints[0];
+                        IntPoint currLeftest = validPoints[0];
+                        IntPoint currRightest = validPoints[0];
+                        for (int i = 0; i < pointIndex; i++)
+                        {
+                            if (validPoints[i].X > currRightest.X)
+                                currRightest = validPoints[i];
+                            if (validPoints[i].X < currRightest.X)
+                                currLeftest = validPoints[i];
+                            if (validPoints[i].Y > currRightest.Y)
+                                currLowest = validPoints[i];
+                            if (validPoints[i].Y < currRightest.Y)
+                                currHighest = validPoints[i];
+                        }
 
-                        pointsLeft--;
-                        validPoints[pointIndex] = tempPoint;
-                        pointIndex++;
+                        Rectangle rect = new Rectangle(currLeftest.X, currHighest.Y, currRightest.X - currLeftest.X, currLowest.Y - currHighest.Y);
+                        Blob newBlob = new Blob(blobIndexes, rect);
+
+                        totBlobs[blobIndexes] = newBlob;
+                        blobIndexes++;
                     }
                 }
-
-                if (pointIndex > 0)
-                {
-                    IntPoint currHighest = validPoints[0];
-                    IntPoint currLowest = validPoints[0];
-                    IntPoint currLeftest = validPoints[0];
-                    IntPoint currRightest = validPoints[0];
-                    for (int i = 0; i < pointIndex; i++)
-                    {
-                        if (validPoints[i].X > currRightest.X)
-                            currRightest = validPoints[i];
-                        if (validPoints[i].X < currRightest.X)
-                            currLeftest = validPoints[i];
-                        if (validPoints[i].Y > currRightest.Y)
-                            currLowest = validPoints[i];
-                        if (validPoints[i].Y < currRightest.Y)
-                            currHighest = validPoints[i];
-                    }
-
-                    Rectangle rect = new Rectangle(currLeftest.X, currHighest.Y, currRightest.X - currLeftest.X, currLowest.Y - currHighest.Y);
-                    Blob newBlob = new Blob(blobIndexes, rect);
-
-                    totBlobs[blobIndexes] = newBlob;
-                    blobIndexes++;
-                }
+                else
+                    pointsLeft = 0;
                 
             }
 
+            PointsMarker marker = new PointsMarker(points);
+
+            // Apply the corner-marking filter
+            Bitmap markers = marker.Apply(inImage);
+
+            // Show on the screen
+
+            var f = new Form();
+            f.FormBorderStyle = FormBorderStyle.None;
+            f.Size = new Size(600, 600);
+            f.Controls.Add(new PictureBox() { Image = markers, Dock = DockStyle.Fill });
+            f.Show();
+
+            markers.Save("C:\\Users\\kbark\\Desktop\\hi.bmp");
+
             return totBlobs;
         }
-
-        private static bool rGetBlobs(Blob[] listBlobs, int threshhold)
+                                                        //list
+        private static List<System.Drawing.Point> rBlob(List<System.Drawing.Point> candidates, List<System.Drawing.Point> candidatesSquared,
+            List<System.Drawing.Point> WindowsCount, System.Drawing.Point current, int distanceThreshhold)
         {
+            List<System.Drawing.Point> newCandidates = new List<System.Drawing.Point>(candidates);
+            List<System.Drawing.Point> newCandidatesSquared = new List<System.Drawing.Point>(candidatesSquared);
+            //foreach (var p in newCandidates)
+            
+            for (int i = 0; i < newCandidates.Count; i++)
+            {
+                for (int j = 0; j < WindowsCount.Count; j++)
+                {
+                    if ((Math.Sqrt(Math.Pow((newCandidates.ElementAt<System.Drawing.Point>(i).X - WindowsCount.ElementAt<System.Drawing.Point>(j).X), 2)
+                        + Math.Pow((newCandidates.ElementAt<System.Drawing.Point>(i).Y - WindowsCount.ElementAt<System.Drawing.Point>(j).Y), 2)) <= distanceThreshhold)
+                        && !newCandidatesSquared.Contains(WindowsCount.ElementAt<System.Drawing.Point>(j)))
+                        newCandidatesSquared.Add(WindowsCount.ElementAt<System.Drawing.Point>(j));
+                }
+            }
 
             
 
-            return true;
+            for (int i = 0; i < newCandidatesSquared.Count; i++)
+            {
+                for (int j = 0; j < WindowsCount.Count; j++)
+                {
+                    if ((Math.Sqrt(Math.Pow((newCandidatesSquared.ElementAt<System.Drawing.Point>(i).X - WindowsCount.ElementAt<System.Drawing.Point>(j).X), 2)
+                        + Math.Pow((newCandidatesSquared.ElementAt<System.Drawing.Point>(i).Y - WindowsCount.ElementAt<System.Drawing.Point>(j).Y), 2)) <= distanceThreshhold)
+                        && !newCandidates.Contains(WindowsCount.ElementAt<System.Drawing.Point>(j)))
+                        newCandidates.Add(WindowsCount.ElementAt<System.Drawing.Point>(j));
+                }
+            }
+
+            bool isDifferent = false;
+            foreach (var p in newCandidates)
+            {
+                if (newCandidatesSquared.Contains(p))
+                    isDifferent = true;
+            }
+
+            List<System.Drawing.Point> superCandidates = new List<System.Drawing.Point>(newCandidates);
+            if (isDifferent)
+            {
+                newCandidates = new List<System.Drawing.Point>(rBlob(newCandidates, newCandidatesSquared, WindowsCount, newCandidates[0], distanceThreshhold));
+
+                foreach (var p in superCandidates)
+                {
+                    if (!newCandidates.Contains(p))
+                        newCandidates.Add(p);
+                }
+            }
+            
+
+            return newCandidates;
         }
-
-
     }
 }
