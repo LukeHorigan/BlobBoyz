@@ -16,4 +16,10 @@ Through Blood, Sweat and Insomnia Cookies
 
 # Challenge we faced
 
+* Interfacing and integrating different programming languages
+* Extracting numerical arrays from *bitmap* format
+
 # Where we go next
+
+* Develop an aesthetically pleasing user interface (UI)
+* Automate the filming procedure
