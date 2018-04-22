@@ -147,7 +147,7 @@ namespace BlobBoyz
             }
 
             var windowsPoints = new List<System.Drawing.Point>();
-            foreach(IntPoint p in points)
+            foreach (IntPoint p in points)
             {
                 System.Drawing.Point currPoint = new System.Drawing.Point(p.X, p.Y);
                 windowsPoints.Add(currPoint);
@@ -175,39 +175,39 @@ namespace BlobBoyz
                             .Where(p => !result.Contains(p) &&
                                    Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= threshhold);
                         */
-                        /*
-                        var candidates = new List<System.Drawing.Point>();
-                        candidates.Add(windowsPoints[0]);
-                        var candidatesSquared = new List<System.Drawing.Point>();
-                        //var nCandidates = new List<System.Drawing.Point>(rBlob(candidates, candidatesSquared, windowsPoints, windowsPoints[0], distanceThreshhold));
-                        candidates = new List<System.Drawing.Point>(nCandidates);
+                    /*
+                    var candidates = new List<System.Drawing.Point>();
+                    candidates.Add(windowsPoints[0]);
+                    var candidatesSquared = new List<System.Drawing.Point>();
+                    //var nCandidates = new List<System.Drawing.Point>(rBlob(candidates, candidatesSquared, windowsPoints, windowsPoints[0], distanceThreshhold));
+                    candidates = new List<System.Drawing.Point>(nCandidates);
 
-                        
-                        foreach (var p in windowsPoints)
-                        {
-                            if ((Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= distanceThreshhold))
-                                candidates.Add(p);
-                        }
 
-                        var candidatsSquared = new List<System.Drawing.Point>(candidates);
+                    foreach (var p in windowsPoints)
+                    {
+                        if ((Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= distanceThreshhold))
+                            candidates.Add(p);
+                    }
 
-                        while (candidatsSquared != candidates)
-                        {
-                            foreach (var p in candidates)
-                            {
+                    var candidatsSquared = new List<System.Drawing.Point>(candidates);
 
-                            }
-                        }
-                        
+                    while (candidatsSquared != candidates)
+                    {
                         foreach (var p in candidates)
                         {
-                            windowsPoints.Remove(p);
-                            result.Add(p);
-                            found.Enqueue(p);
+
                         }
-                        
                     }
-                */
+
+                    foreach (var p in candidates)
+                    {
+                        windowsPoints.Remove(p);
+                        result.Add(p);
+                        found.Enqueue(p);
+                    }
+
+                }
+            */
 
                     var candidates = new List<System.Drawing.Point>();
                     candidates.Add(windowsPoints[0]);
@@ -275,7 +275,7 @@ namespace BlobBoyz
                 }
                 else
                     pointsLeft = 0;
-                
+
             }
 
             PointsMarker marker = new PointsMarker(points);
@@ -291,7 +291,10 @@ namespace BlobBoyz
             f.Controls.Add(new PictureBox() { Image = markers, Dock = DockStyle.Fill });
             f.Show();
 
-            markers.Save("C:\\Users\\kbark\\Desktop\\hi.bmp");
+
+
+            // UNCOMMENT TO OUTPUT
+            //tempBitmap.Save("C:\\Users\\<YOURNAME>\\Desktop\\output.bmp");
 
             return totBlobs;
         }
