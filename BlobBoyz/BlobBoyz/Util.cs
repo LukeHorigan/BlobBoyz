@@ -107,7 +107,7 @@ namespace BlobbyBoyz
             {
                 foreach (Bitmap bm in bitmaps)
                 {
-                    bm.Save(path);
+                    bm.Save(path,System.Drawing.Imaging.ImageFormat.Jpeg);
                 }
             }
             catch (Exception e)
@@ -129,7 +129,7 @@ namespace BlobbyBoyz
             {
                 foreach (Blob b in blobs)
                 {
-                    b.Image.ToManagedImage().Save(savePath);
+                    b.Image.ToManagedImage().Save(savePath,System.Drawing.Imaging.ImageFormat.Jpeg);
                 }
             }
             catch (Exception e)
