@@ -94,7 +94,8 @@ namespace BlobBoyz
             return hasBeenFound;
         }
 
-        public static bool isBlobPresentInNext(/*Blob to be tested*/Accord.Imaging.Blob inBlob, /*2D list of next blobs used to determine if it continues to exist [frame][blobs]*/ Accord.Imaging.Blob[] nextBlobs,
+        public static bool isBlobPresentInNext(/*Blob to be tested*/Accord.Imaging.Blob inBlob, /*2D list of next blobs used to determine if it continues to exist [frame][blobs]*/ 
+            Accord.Imaging.Blob[] nextBlobs,
             /*Number of horizontal pixels moved per frame*/int currXPPF, /*Number of vertical pixels moved per frame*/int currYPPF, int errorMarginSize,
             /*Margin of error for position in pixels*/int errorMarginPos)
         {
