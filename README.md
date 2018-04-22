@@ -4,7 +4,7 @@ An automated algorithm for inspecting holes in pipes
 
 **Authors**
 
-Kevin Barkevich, Lucas Horigan, David Chen, Kevin Dickey,Aaron Gdanski
+Lucas Horigan, Kevin Barkevich, Aaron Gdanski, David Chen, Kevin Dickey, Ryan McMahon
 
 # Overview
 
@@ -19,7 +19,7 @@ Through Blood, Sweat and Insomnia Cookies
 * Interfacing and integrating different programming languages
 * Extracting numerical arrays from *bitmap* format
 
-# Where we go next
+# Where we will go next
 
 * Develop an aesthetically pleasing user interface (UI)
 * Automate the filming procedure
