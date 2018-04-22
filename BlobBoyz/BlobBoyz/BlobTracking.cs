@@ -118,6 +118,7 @@ namespace BlobBoyz
 
             List<IntPoint> points = fast.ProcessImage(inImage);
 
+            int blobIndexes = 0;
             Blob[] totBlobs = new Blob[BlobBoyz.Program.MAX_BLOBS_PER_FRAME];
 
             int pointsLeft = 0;
@@ -128,13 +129,15 @@ namespace BlobBoyz
                 pointsLeft++;
                 myInc++;
             }
+            int allPtsCtr = 0;
             IntPoint[] allPoints = new IntPoint[pointsLeft]; // This mess gets all of the points into an array
+            /*
             foreach (var p in points)
             {
                 allPoints[myInc - 1] = p;
                 myInc--;
             }
-
+            */
             bool[] isUsed = new bool[pointsLeft];
 
             for (int i = 0; i < pointsLeft; i++)
@@ -173,9 +176,61 @@ namespace BlobBoyz
                     }
                 }
 
-                foreach ()
-            }
+                IntPoint[] validPoints = new IntPoint[BlobBoyz.Program.MAX_BLOBS_PER_FRAME * 30];
+                int pointIndex = 0;
 
+                foreach (System.Drawing.Point p in result)
+                {
+                    IntPoint tempPoint;
+                    tempPoint.X = p.X;
+                    tempPoint.Y = p.Y;
+
+                    bool canAdd = true;
+                    for (int i = 0; i < allPoints.Length; i++)
+                    {
+                        if (tempPoint.X == allPoints[i].X && tempPoint.Y == allPoints[i].Y)
+                        {
+                            canAdd = false;
+                        }
+                    }
+
+                    if (canAdd)
+                    {
+                        allPoints[allPtsCtr] = tempPoint;
+                        allPtsCtr++;
+
+                        pointsLeft--;
+                        validPoints[pointIndex] = tempPoint;
+                        pointIndex++;
+                    }
+                }
+
+                if (pointIndex > 0)
+                {
+                    IntPoint currHighest = validPoints[0];
+                    IntPoint currLowest = validPoints[0];
+                    IntPoint currLeftest = validPoints[0];
+                    IntPoint currRightest = validPoints[0];
+                    for (int i = 0; i < pointIndex; i++)
+                    {
+                        if (validPoints[i].X > currRightest.X)
+                            currRightest = validPoints[i];
+                        if (validPoints[i].X < currRightest.X)
+                            currLeftest = validPoints[i];
+                        if (validPoints[i].Y > currRightest.Y)
+                            currLowest = validPoints[i];
+                        if (validPoints[i].Y < currRightest.Y)
+                            currHighest = validPoints[i];
+                    }
+
+                    Rectangle rect = new Rectangle(currLeftest.X, currHighest.Y, currRightest.X - currLeftest.X, currLowest.Y - currHighest.Y);
+                    Blob newBlob = new Blob(blobIndexes, rect);
+
+                    totBlobs[blobIndexes] = newBlob;
+                    blobIndexes++;
+                }
+                
+            }
 
             return totBlobs;
         }
