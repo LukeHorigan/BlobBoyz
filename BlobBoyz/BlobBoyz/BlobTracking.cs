@@ -120,7 +120,7 @@ namespace BlobBoyz
             List<IntPoint> points = fast.ProcessImage(inImage);
 
             int blobIndexes = 0;
-            Blob[] totBlobs = new Blob[BlobBoyz.Program.MAX_BLOBS_PER_FRAME];
+            Blob[] totBlobs = new Blob[999999];
 
             int pointsLeft = 0;
             int myInc = 0;
@@ -157,7 +157,7 @@ namespace BlobBoyz
             {
                 var result = new HashSet<System.Drawing.Point>();
                 var found = new Queue<System.Drawing.Point>();
-                if (windowsPoints.Count != 0)
+                if (windowsPoints.Count > 1)
                 {
                     windowsPoints.Reverse();
                     if (pointsLeft > windowsPoints.Count())
@@ -166,6 +166,7 @@ namespace BlobBoyz
                     windowsPoints.Reverse();
                     windowsPoints.RemoveAt(0);
 
+                    /*
                     while (found.Count > 0)
                     {
                         var current = found.Dequeue();
@@ -174,14 +175,14 @@ namespace BlobBoyz
                             .Where(p => !result.Contains(p) &&
                                    Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= threshhold);
                         */
-
+                        /*
                         var candidates = new List<System.Drawing.Point>();
                         candidates.Add(windowsPoints[0]);
                         var candidatesSquared = new List<System.Drawing.Point>();
-                        var nCandidates = new List<System.Drawing.Point>(rBlob(candidates, candidatesSquared, windowsPoints, windowsPoints[0], distanceThreshhold));
+                        //var nCandidates = new List<System.Drawing.Point>(rBlob(candidates, candidatesSquared, windowsPoints, windowsPoints[0], distanceThreshhold));
                         candidates = new List<System.Drawing.Point>(nCandidates);
 
-                        /*
+                        
                         foreach (var p in windowsPoints)
                         {
                             if ((Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= distanceThreshhold))
@@ -197,7 +198,7 @@ namespace BlobBoyz
 
                             }
                         }
-                        */
+                        
                         foreach (var p in candidates)
                         {
                             windowsPoints.Remove(p);
@@ -205,6 +206,17 @@ namespace BlobBoyz
                             found.Enqueue(p);
                         }
                         
+                    }
+                */
+
+                    var candidates = new List<System.Drawing.Point>();
+                    candidates.Add(windowsPoints[0]);
+                    var candidatesSquared = new List<System.Drawing.Point>();
+                    var rResult = new List<System.Drawing.Point>(rBlob(candidates, candidatesSquared, windowsPoints, windowsPoints[0], distanceThreshhold));
+
+                    foreach (var q in rResult)
+                    {
+                        result.Add(q);
                     }
 
                     IntPoint[] validPoints = new IntPoint[999999];
@@ -254,7 +266,7 @@ namespace BlobBoyz
                                 currHighest = validPoints[i];
                         }
 
-                        Rectangle rect = new Rectangle(currLeftest.X, currHighest.Y, currRightest.X - currLeftest.X, currLowest.Y - currHighest.Y);
+                        Rectangle rect = new Rectangle(currLeftest.X, currHighest.Y, currRightest.X - currLeftest.X + 1, currLowest.Y - currHighest.Y + 1);
                         Blob newBlob = new Blob(blobIndexes, rect);
 
                         totBlobs[blobIndexes] = newBlob;
@@ -318,7 +330,7 @@ namespace BlobBoyz
             bool isDifferent = false;
             foreach (var p in newCandidates)
             {
-                if (newCandidatesSquared.Contains(p))
+                if (!newCandidatesSquared.Contains(p))
                     isDifferent = true;
             }
 
