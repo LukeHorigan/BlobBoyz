@@ -11,6 +11,7 @@ using Accord.Imaging;
 using Accord.Imaging.Filters;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 
 
@@ -117,9 +118,76 @@ namespace BlobBoyz
 
             List<IntPoint> points = fast.ProcessImage(inImage);
 
+            Blob[] totBlobs = new Blob[BlobBoyz.Program.MAX_BLOBS_PER_FRAME];
 
-            return new Blob[1];
+            int pointsLeft = 0;
+            int myInc = 0;
+
+            foreach (var p in points)
+            {
+                pointsLeft++;
+                myInc++;
+            }
+            IntPoint[] allPoints = new IntPoint[pointsLeft]; // This mess gets all of the points into an array
+            foreach (var p in points)
+            {
+                allPoints[myInc - 1] = p;
+                myInc--;
+            }
+
+            bool[] isUsed = new bool[pointsLeft];
+
+            for (int i = 0; i < pointsLeft; i++)
+            {
+                isUsed[i] = false;
+            }
+
+            var windowsPoints = new List<System.Drawing.Point>();
+            foreach(IntPoint p in points)
+            {
+                System.Drawing.Point currPoint = new System.Drawing.Point(p.X, p.Y);
+                windowsPoints.Add(currPoint);
+            }
+
+            while (pointsLeft > 0)
+            {
+                var result = new HashSet<System.Drawing.Point>();
+                var found = new Queue<System.Drawing.Point>();
+
+                windowsPoints.Reverse();
+                found.Enqueue(windowsPoints[pointsLeft - 1]);
+                windowsPoints.Reverse();
+                windowsPoints.RemoveAt(0);
+
+                while (found.Count > 0)
+                {
+                    var current = found.Dequeue();
+                    var candidates = windowsPoints
+                        .Where(p => !result.Contains(p) &&
+                               Math.Sqrt(Math.Pow((current.X - p.X), 2) + Math.Pow((current.Y - p.Y), 2)) <= threshhold);
+
+                    foreach (var p in candidates)
+                    {
+                        result.Add(p);
+                        found.Enqueue(p);
+                    }
+                }
+
+                foreach ()
+            }
+
+
+            return totBlobs;
         }
+
+        private static bool rGetBlobs(Blob[] listBlobs, int threshhold)
+        {
+
+            
+
+            return true;
+        }
+
 
     }
 }
