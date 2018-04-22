@@ -36,13 +36,14 @@ namespace BlobbyBoyz
         }
         /*
          * Purpose: Executes a python file to produce text output file.
-         * Parameters: None
+         * Parameters: string filePath - path of python file to execute.
          * Returns: None
+         * Outcome: Produces myfile.txt, which is considered the output for the machine learning program.
          */
-        public static void doPython()
+        public static void doPython(string filePath)
         {
             ScriptEngine engine = Python.CreateEngine();
-            engine.ExecuteFile(@"test.py");
+            engine.ExecuteFile(@filePath);
             // this will produce myfile.txt file with integers
         }
 
